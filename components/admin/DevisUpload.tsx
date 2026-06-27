@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { supprimerDevisAction, uploadDevisAction } from "@/app/actions/admin";
 import { Button } from "@/components/ui/Button";
-import { uploadDevisAction, supprimerDevisAction } from "@/app/actions/admin";
 
 type Props = {
   demandeId: string;
@@ -59,9 +59,7 @@ export function DevisUpload({ demandeId, devisActuel }: Props) {
           <p>
             Devis actuel : <span className="font-medium">{devisActuel.nom}</span>
           </p>
-          <p className="text-xs mt-0.5">
-            Uploader un nouveau fichier remplacera l'existant.
-          </p>
+          <p className="text-xs mt-0.5">Uploader un nouveau fichier remplacera l'existant.</p>
         </div>
       )}
 

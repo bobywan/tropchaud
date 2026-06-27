@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
-import { genererCode } from "@/lib/code";
-import type { DonneesDemandeClient } from "@/lib/validations";
 import type { StatutDemande } from "@/app/generated/prisma/client";
+import { genererCode } from "@/lib/code";
+import { prisma } from "@/lib/prisma";
+import type { DonneesDemandeClient } from "@/lib/validations";
 
 const MAX_TENTATIVES_CODE = 10;
 
@@ -37,10 +37,7 @@ export async function getDemandePourClient(code: string) {
   });
 }
 
-export async function verifierAccesDemande(
-  code: string,
-  email: string,
-): Promise<boolean> {
+export async function verifierAccesDemande(code: string, email: string): Promise<boolean> {
   const demande = await prisma.demande.findUnique({
     where: { code },
     select: { email: true },
@@ -68,10 +65,7 @@ export async function getDemandePourModification(code: string) {
   });
 }
 
-export async function modifierDemande(
-  code: string,
-  donnees: DonneesDemandeClient,
-): Promise<void> {
+export async function modifierDemande(code: string, donnees: DonneesDemandeClient): Promise<void> {
   await prisma.demande.update({
     where: { code },
     data: { ...donnees, statut: "NOUVELLE" },

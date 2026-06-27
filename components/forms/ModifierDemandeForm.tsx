@@ -1,10 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
+import { modifierDemandeAction } from "@/app/actions/demandes";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { Button } from "@/components/ui/Button";
-import { modifierDemandeAction } from "@/app/actions/demandes";
 
 type FichierExistant = {
   id: string;
@@ -26,7 +26,7 @@ type Props = {
   };
 };
 
-const initialState = {};
+const initialState: { erreurs?: Record<string, string[]>; erreurGlobale?: string } = {};
 
 function formatTaille(octets: number): string {
   if (octets < 1024) return `${octets} o`;
@@ -35,10 +35,7 @@ function formatTaille(octets: number): string {
 }
 
 export function ModifierDemandeForm({ code, demande }: Props) {
-  const [state, action, pending] = useActionState(
-    modifierDemandeAction,
-    initialState,
-  );
+  const [state, action, pending] = useActionState(modifierDemandeAction, initialState);
 
   const err = state.erreurs ?? {};
 
@@ -106,19 +103,12 @@ export function ModifierDemandeForm({ code, demande }: Props) {
 
       {demande.fichiers.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-sm font-medium text-gray-700">
-            Fichiers existants
-          </p>
+          <p className="text-sm font-medium text-gray-700">Fichiers existants</p>
           <ul className="divide-y divide-gray-100 rounded-lg border border-gray-200">
             {demande.fichiers.map((f) => (
-              <li
-                key={f.id}
-                className="flex items-center justify-between px-4 py-3"
-              >
+              <li key={f.id} className="flex items-center justify-between px-4 py-3">
                 <div>
-                  <p className="text-sm text-gray-900 truncate max-w-xs">
-                    {f.nom}
-                  </p>
+                  <p className="text-sm text-gray-900 truncate max-w-xs">{f.nom}</p>
                   <p className="text-xs text-gray-400">{formatTaille(f.taille)}</p>
                 </div>
                 <label className="flex items-center gap-2 text-sm text-red-600 cursor-pointer">
@@ -148,9 +138,7 @@ export function ModifierDemandeForm({ code, demande }: Props) {
           accept="image/jpeg,image/png,image/webp,application/pdf"
           className="text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
         />
-        <p className="text-xs text-gray-500">
-          JPEG, PNG, WebP ou PDF — 10 Mo max par fichier
-        </p>
+        <p className="text-xs text-gray-500">JPEG, PNG, WebP ou PDF — 10 Mo max par fichier</p>
       </div>
 
       {state.erreurGlobale && (

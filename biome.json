@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!out", "!coverage"]
+    "includes": ["**", "!node_modules", "!.next", "!dist", "!out", "!coverage", "!.cursor", "!.vscode", "!*.code-workspace"]
   },
   "formatter": {
     "enabled": true,
@@ -37,6 +37,11 @@
       "source": {
         "organizeImports": "on"
       }
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "javascript": {

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { getDemandePourModification } from "@/services/demandes";
 import { ModifierDemandeForm } from "@/components/forms/ModifierDemandeForm";
+import { getDemandePourModification } from "@/services/demandes";
 
 type Props = {
   params: Promise<{ code: string }>;
@@ -40,10 +40,7 @@ export default async function ModifierDemandePage({ params }: Props) {
             <span className="text-2xl">❄️</span>
             <span className="text-xl font-bold text-gray-900">TropChaud</span>
           </Link>
-          <Link
-            href={`/suivi/${code}`}
-            className="text-sm text-gray-500 hover:text-gray-700"
-          >
+          <Link href={`/suivi/${code}`} className="text-sm text-gray-500 hover:text-gray-700">
             ← Retour à ma demande
           </Link>
         </div>
@@ -51,9 +48,7 @@ export default async function ModifierDemandePage({ params }: Props) {
 
       <main className="mx-auto max-w-2xl px-4 py-10">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            Modifier ma demande
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Modifier ma demande</h1>
           <p className="text-sm text-gray-500 font-mono">{code}</p>
         </div>
 

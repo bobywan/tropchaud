@@ -1,10 +1,6 @@
 import { Sidebar } from "@/components/admin/Sidebar";
 
-export default function ProtectedAdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProtectedAdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <Sidebar />

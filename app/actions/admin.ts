@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { StatutDemande } from "@/app/generated/prisma/client";
 import { auth } from "@/lib/auth";
-import { schemaModificationStatut, schemaFichier } from "@/lib/validations";
+import { schemaFichier, schemaModificationStatut } from "@/lib/validations";
 import { modifierStatut } from "@/services/demandes";
 import { ajouterDevis, supprimerDevis } from "@/services/fichiers";
-import type { StatutDemande } from "@/app/generated/prisma/client";
 
 async function verifierAdmin() {
   const session = await auth();
@@ -62,9 +62,7 @@ export async function uploadDevisAction(
   return {};
 }
 
-export async function supprimerDevisAction(
-  id: string,
-): Promise<{ erreur?: string }> {
+export async function supprimerDevisAction(id: string): Promise<{ erreur?: string }> {
   await verifierAdmin();
 
   try {

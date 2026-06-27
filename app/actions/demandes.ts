@@ -4,14 +4,11 @@ import { redirect } from "next/navigation";
 import { schemaDemandeClient, schemaFichier } from "@/lib/validations";
 import {
   creerDemande,
-  verifierAccesDemande,
   getDemandePourModification,
   modifierDemande,
+  verifierAccesDemande,
 } from "@/services/demandes";
-import {
-  ajouterFichiersDemande,
-  supprimerFichierDemande,
-} from "@/services/fichiers";
+import { ajouterFichiersDemande, supprimerFichierDemande } from "@/services/fichiers";
 
 type FormState = {
   erreurs?: Record<string, string[]>;
@@ -60,8 +57,7 @@ export async function soumettreDemandeAction(
     }
   } catch {
     return {
-      erreurGlobale:
-        "Une erreur est survenue lors de l'envoi. Veuillez réessayer.",
+      erreurGlobale: "Une erreur est survenue lors de l'envoi. Veuillez réessayer.",
     };
   }
 
@@ -108,13 +104,10 @@ export async function modifierDemandeAction(
   const demande = await getDemandePourModification(code);
   if (
     !demande ||
-    !STATUTS_MODIFIABLES.includes(
-      demande.statut as (typeof STATUTS_MODIFIABLES)[number],
-    )
+    !STATUTS_MODIFIABLES.includes(demande.statut as (typeof STATUTS_MODIFIABLES)[number])
   ) {
     return {
-      erreurGlobale:
-        "Cette demande ne peut plus être modifiée à ce stade.",
+      erreurGlobale: "Cette demande ne peut plus être modifiée à ce stade.",
     };
   }
 
@@ -157,8 +150,7 @@ export async function modifierDemandeAction(
     }
   } catch {
     return {
-      erreurGlobale:
-        "Une erreur est survenue lors de la modification. Veuillez réessayer.",
+      erreurGlobale: "Une erreur est survenue lors de la modification. Veuillez réessayer.",
     };
   }
 

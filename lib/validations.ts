@@ -19,9 +19,7 @@ export const schemaDemandeClient = z.object({
 export type DonneesDemandeClient = z.infer<typeof schemaDemandeClient>;
 
 export const schemaCodeSuivi = z.object({
-  code: z
-    .string()
-    .regex(/^CLIM-[A-F0-9]{6}$/, "Code de suivi invalide (ex : CLIM-A82F91)"),
+  code: z.string().regex(/^CLIM-[A-F0-9]{6}$/, "Code de suivi invalide (ex : CLIM-A82F91)"),
 });
 
 export const schemaFichier = z

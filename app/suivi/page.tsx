@@ -21,9 +21,7 @@ export default function SuiviPage() {
 
       <main className="mx-auto max-w-md px-4 py-16">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Suivre ma demande
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Suivre ma demande</h1>
           <p className="text-gray-500 text-sm">
             Entrez votre code de suivi et l'adresse email utilisée lors de votre demande.
           </p>

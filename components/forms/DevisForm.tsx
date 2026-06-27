@@ -1,10 +1,10 @@
 "use client";
 
 import { useActionState, useRef } from "react";
+import { soumettreDemandeAction } from "@/app/actions/demandes";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { Button } from "@/components/ui/Button";
-import { soumettreDemandeAction } from "@/app/actions/demandes";
 
 type FormState = {
   erreurs?: Record<string, string[]>;
@@ -14,10 +14,7 @@ type FormState = {
 const initialState: FormState = {};
 
 export function DevisForm() {
-  const [state, action, pending] = useActionState(
-    soumettreDemandeAction,
-    initialState,
-  );
+  const [state, action, pending] = useActionState(soumettreDemandeAction, initialState);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const err = state.erreurs ?? {};
@@ -25,13 +22,7 @@ export function DevisForm() {
   return (
     <form action={action} className="flex flex-col gap-5">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <Input
-          label="Nom"
-          name="nom"
-          required
-          autoComplete="family-name"
-          error={err.nom?.[0]}
-        />
+        <Input label="Nom" name="nom" required autoComplete="family-name" error={err.nom?.[0]} />
         <Input
           label="Prénom"
           name="prenom"
@@ -92,9 +83,7 @@ export function DevisForm() {
           accept="image/jpeg,image/png,image/webp,application/pdf"
           className="text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
         />
-        <p className="text-xs text-gray-500">
-          JPEG, PNG, WebP ou PDF — 10 Mo max par fichier
-        </p>
+        <p className="text-xs text-gray-500">JPEG, PNG, WebP ou PDF — 10 Mo max par fichier</p>
       </div>
 
       {state.erreurGlobale && (

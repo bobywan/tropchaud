@@ -4,9 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
-const navItems = [
-  { href: "/admin/dashboard", label: "Tableau de bord", icon: "📋" },
-];
+const navItems = [{ href: "/admin/dashboard", label: "Tableau de bord", icon: "📋" }];
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -26,8 +24,7 @@ export function Sidebar() {
           {navItems.map((item) => {
             const isActive =
               pathname === item.href ||
-              (item.href !== "/admin/dashboard" &&
-                pathname.startsWith(item.href));
+              (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
             return (
               <li key={item.href}>
                 <Link
