@@ -1,0 +1,44 @@
+---
+description: Respect de l'architecture existante — Server Components, App Router, structure de dossiers.
+alwaysApply: true
+---
+
+# Architecture du projet
+
+## Comprendre avant de proposer
+
+- Lis `node_modules/next/dist/docs/` pour toute question sur le comportement de Next.js 16 — les APIs ont changé.
+- Trace le flux de données complet (de la requête à la réponse) avant de modifier un composant ou une route.
+- Vérifie si un pattern similaire existe déjà dans `app/` avant d'introduire une nouvelle abstraction.
+
+## Server Components par défaut
+
+- Tout composant est Server Component par défaut.
+- N'ajoute `"use client"` que si le composant a besoin de : état interactif (`useState`, `useEffect`), événements navigateur, ou APIs client-only.
+- Un composant `"use client"` doit être le plus petit possible — extrait la logique serveur.
+
+## Structure des dossiers
+
+```
+app/                    # App Router — routes, layouts, pages
+  (groupe)/             # Route group (absent de l'URL)
+  [slug]/               # Segment dynamique
+  api/[nom]/route.ts    # Route Handler (GET, POST, etc.)
+components/             # Composants réutilisables (si créé)
+lib/                    # Utilitaires, helpers (si créé)
+public/                 # Assets statiques
+```
+
+- Un composant utilisé dans une seule page reste dans `app/` avec sa page.
+- Un composant partagé va dans `components/`.
+- Les utilitaires purs (sans JSX) vont dans `lib/`.
+
+## Imports
+
+- Toujours utiliser l'alias `@/` pour les imports internes.
+- Jamais de chemin relatif remontant (`../../`) quand l'alias `@/` fonctionne.
+
+## Variables d'environnement
+
+- `NEXT_PUBLIC_*` uniquement pour le client — elles sont incluses dans le bundle.
+- Les secrets restent côté serveur, jamais référencés dans des composants `"use client"`.

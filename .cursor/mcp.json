@@ -3,6 +3,13 @@
     "headroom": {
       "command": "headroom",
       "args": ["mcp", "serve"]
+    },
+    "context-mode": {
+      "command": "context-mode"
+    },
+    "serena": {
+      "command": "serena",
+      "args": ["start-mcp-server", "--context=ide", "--project-from-cwd"]
     }
   }
 }

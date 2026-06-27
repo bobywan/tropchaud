@@ -1,0 +1,32 @@
+---
+description: Conventions git — commits atomiques, messages clairs, branches.
+globs: ".git*"
+alwaysApply: false
+---
+
+# Workflow Git
+
+## Commits
+
+- Un commit = une intention. Ne mélange pas refacto et feature dans le même commit.
+- Message en anglais, impératif, concis : `fix: null check in auth middleware` plutôt que `fixed stuff`.
+- Format conseillé : `<type>: <description courte>` (types : `feat`, `fix`, `refactor`, `chore`, `docs`, `test`).
+- Le body du commit explique le *pourquoi*, pas le *quoi* (le diff le montre déjà).
+
+## Branches
+
+- Nommage : `feat/<description>`, `fix/<description>`, `chore/<description>`.
+- Une branche = une fonctionnalité ou un correctif ciblé.
+- Ne commite jamais directement sur `main` sans revue.
+
+## Avant de commiter
+
+1. `npm run check` — lint + format + imports
+2. `npm run typecheck` — vérification TypeScript
+3. `npm run build` — vérification que le build passe (si impactant)
+
+## Ne jamais commiter
+
+- Fichiers `.env*` (sauf `.env.example`)
+- Dossiers `node_modules/`, `.next/`, `dist/`
+- Credentials, tokens, clés API en clair

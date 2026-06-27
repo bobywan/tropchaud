@@ -1,0 +1,42 @@
+---
+description: Conventions Docker — Dockerfile, Compose, bonnes pratiques pour les projets conteneurisés.
+globs: "{Dockerfile*,docker-compose*,compose*,.dockerignore}"
+alwaysApply: false
+---
+
+# Docker
+
+## Dockerfile
+
+- Utilise une image de base officielle et versionnée (`node:24-alpine`, pas `node:latest`).
+- Structure multi-stage pour séparer build et runtime :
+  1. `deps` — installation des dépendances
+  2. `builder` — build de l'application
+  3. `runner` — image finale minimale (runtime only)
+- `WORKDIR /app` dès le début.
+- Copie `package.json` et `package-lock.json` avant le reste pour profiter du cache Docker.
+- `npm ci --only=production` en production (pas `npm install`).
+- Expose le port applicatif avec `EXPOSE`.
+- Lance le processus avec `CMD ["node", "server.js"]` ou l'équivalent framework.
+
+## Sécurité
+
+- Crée un utilisateur non-root et bascule dessus avant `CMD` :
+  ```dockerfile
+  RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+  USER nextjs
+  ```
+- Ne copie jamais `.env*` dans l'image — utilise des variables d'environnement à runtime.
+- Ajoute un `.dockerignore` couvrant : `node_modules/`, `.next/`, `.env*`, `.git/`.
+
+## Docker Compose
+
+- Utilise `compose.yml` (format moderne, sans le préfixe `docker-`).
+- Définis les `healthcheck` pour les services critiques (base de données, cache).
+- Sépare les services dev (`compose.override.yml`) des services production (`compose.yml`).
+- Utilise des volumes nommés pour les données persistantes (pas de bind mounts en production).
+
+## Variables d'environnement
+
+- Référence `.env.example` comme template dans `compose.yml` avec `env_file: .env.local`.
+- Ne valide jamais de secrets dans les fichiers Compose.

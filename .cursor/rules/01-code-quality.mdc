@@ -1,0 +1,37 @@
+---
+description: Standards de qualité du code — TypeScript strict, BiomeJS, patterns React/Next.js.
+globs: "**/*.{ts,tsx,js,mjs}"
+alwaysApply: false
+---
+
+# Qualité du code
+
+## TypeScript
+
+- TypeScript strict activé : pas d'`any` explicite, pas de cast forcé (`as unknown as X`).
+- Les types s'importent avec `import type`.
+- Préfère les types utilitaires natifs (`Partial`, `Required`, `Pick`, `Omit`) aux types manuels redondants.
+- `const` par défaut, `let` si nécessaire, jamais `var`.
+
+## Fonctions et composants
+
+- Fonctions nommées et exportées plutôt que constantes anonymes pour les composants principaux.
+- Props avec `type`, jamais `interface` pour les props de composants.
+- Gestion d'erreurs async explicite : `try/catch` ou `.catch()`, jamais silencieuse.
+
+## Style et lint
+
+- BiomeJS est le seul outil de lint et format — ne pas ajouter ESLint ou Prettier.
+- Vérifie avec `npm run check` après tes modifications.
+- lineWidth : 100, quotes doubles, trailing commas — respecte la config `biome.json`.
+
+## Commentaires
+
+- Commente uniquement ce qui est non évident : intention, contrainte, compromis.
+- Pas de commentaires qui narrent le code (`// increment counter`, `// return result`).
+- Un `TODO:` doit avoir un contexte : `TODO: [raison] — [condition de résolution]`.
+
+## Tests
+
+- Logique non triviale → laisse au minimum un check auto-exécutable (assert ou test unitaire minimal).
+- Pas de frameworks lourds pour un seul check : un script Node simple suffit.

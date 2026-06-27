@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+}
+
+enum StatutDemande {
+  NOUVELLE
+  EN_COURS
+  INFOS_MANQUANTES
+  DEVIS_DISPONIBLE
+  TERMINEE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Demande {
+  id        String        @id @default(cuid())
+  code      String        @unique
+  nom       String
+  prenom    String
+  telephone String
+  email     String
+  adresse   String
+  message   String
+  statut    StatutDemande @default(NOUVELLE)
+  fichiers  Fichier[]
+  devis     Devis?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model Fichier {
+  id        String   @id @default(cuid())
+  demandeId String
+  demande   Demande  @relation(fields: [demandeId], references: [id], onDelete: Cascade)
+  nom       String
+  type      String
+  taille    Int
+  cle       String
+  createdAt DateTime @default(now())
+}
+
+model Devis {
+  id        String   @id @default(cuid())
+  demandeId String   @unique
+  demande   Demande  @relation(fields: [demandeId], references: [id], onDelete: Cascade)
+  nom       String
+  taille    Int
+  cle       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

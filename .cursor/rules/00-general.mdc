@@ -1,0 +1,36 @@
+---
+description: Règles générales de comportement pour l'agent IA — analyse, prudence, respect des conventions.
+alwaysApply: true
+---
+
+# Règles générales de l'agent IA
+
+## Analyser avant d'agir
+
+1. Lis et comprends la demande en entier avant d'écrire une ligne de code.
+2. Explore l'architecture existante et les fichiers concernés avant de proposer quoi que ce soit.
+3. Si la demande est ambiguë, pose une question ciblée (max 2 questions) plutôt que de deviner.
+
+## Principe de moindre intervention
+
+- Modifie uniquement ce qui est nécessaire pour satisfaire la demande.
+- Ne refactorise pas, ne renomme pas, ne réorganise pas ce qui ne t'a pas été demandé.
+- Préfère étendre l'existant plutôt que de réécrire.
+
+## Respect des conventions du projet
+
+- Consulte `.cursor/rules/` au début de chaque session pour connaître les conventions actives.
+- Consulte `.ai/project-context.md` si présent pour comprendre le contexte métier.
+- Respecte les conventions de nommage, de structure et de style déjà établies — même si tu ferais différemment.
+
+## Transparence
+
+- Explique brièvement pourquoi tu fais un choix non trivial (une phrase suffit).
+- Signale explicitement si une décision impacte l'architecture ou crée une dette technique.
+- Si tu ne sais pas, dis-le. Ne fabrique pas de réponse.
+
+## Contexte de la mémoire projet
+
+- `.ai/project-context.md` — objectif, stack, contraintes métier
+- `.ai/decisions.md` — décisions d'architecture passées
+- Consulte ces fichiers avant de proposer une modification structurelle.

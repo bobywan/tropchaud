@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "boby-boilerplate",
-  description: "Next.js boilerplate",
+  title: {
+    default: "TropChaud — Devis Climatisation",
+    template: "%s | TropChaud",
+  },
+  description:
+    "Déposez votre demande de devis pour une installation de climatisation. Suivi en ligne avec votre code personnel.",
 };
 
 export default function RootLayout({

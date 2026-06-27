@@ -6,11 +6,161 @@
 # Usage :
 #   ./scripts/sync-boilerplate.sh           # branche main
 #   BRANCH=feat/xxx ./scripts/sync-boilerplate.sh  # branche custom
+#   ./scripts/sync-boilerplate.sh --check   # vérification sans écriture (CI-safe)
 
 set -euo pipefail
 
-# Envelopper dans main() : bash parse la fonction entièrement en mémoire,
-# ce qui permet au script de se mettre à jour sans causer de crash.
+# SHA-256 compatible macOS (shasum) et Linux (sha256sum)
+_sha256() {
+  if command -v sha256sum &>/dev/null; then
+    sha256sum "$1" | awk '{print $1}'
+  else
+    shasum -a 256 "$1" | awk '{print $1}'
+  fi
+}
+
+# Liste des fichiers à synchroniser — partagée entre main et --check
+_list_files() {
+  local is_nextjs=false
+  if ls next.config.* &>/dev/null 2>&1 || ([ -f "package.json" ] && grep -q '"next"' package.json); then
+    is_nextjs=true
+  fi
+
+  cat <<'FILES'
+biome.json
+.nvmrc
+.vscode/settings.json
+.vscode/extensions.json
+.cursor/mcp.json
+.cursor/hooks.json
+.cursor/rules/project-stack.mdc
+.cursor/rules/typescript-react.mdc
+.cursor/rules/tailwind.mdc
+.cursor/rules/context-mode.mdc
+.cursor/rules/ponytail.mdc
+.cursor/rules/00-general.mdc
+.cursor/rules/01-code-quality.mdc
+.cursor/rules/02-architecture.mdc
+.cursor/rules/03-git-workflow.mdc
+.cursor/rules/04-security.mdc
+.cursor/rules/05-documentation.mdc
+.cursor/rules/06-docker.mdc
+.cursor/skills/boilerplate-conventions/SKILL.md
+.ai/README.md
+scripts/init-project.sh
+FILES
+
+  if [ "$is_nextjs" = true ]; then
+    cat <<'NEXTJS'
+tsconfig.json
+.github/workflows/ci.yml
+.cursor/rules/nextjs-app-router.mdc
+scripts/dev-start.mjs
+NEXTJS
+  fi
+}
+
+# Auto-mise à jour : télécharge la version distante, remplace si différente, relance.
+# Si curl échoue, on continue sans planter.
+_self_update() {
+  local branch="${BRANCH:-main}"
+  local url="https://raw.githubusercontent.com/bobywan/boby-boilerplate/${branch}/scripts/sync-boilerplate.sh"
+  local tmp
+  tmp="$(mktemp)"
+
+  if ! curl -fsSL "$url" -o "$tmp" 2>/dev/null; then
+    rm -f "$tmp"
+    return 0
+  fi
+
+  if diff -q "$tmp" "$0" &>/dev/null; then
+    rm -f "$tmp"
+    return 0
+  fi
+
+  cp "$tmp" "$0"
+  chmod +x "$0"
+  rm -f "$tmp"
+  echo "↻ sync-boilerplate.sh mis à jour — relancement…"
+  exec bash "$0" "$@"
+}
+
+# Mode --check / -c : compare les hashes SHA-256 sans écrire de fichier.
+# Exit 0 si tout est à jour, 1 sinon (CI-safe).
+_check_mode() {
+  local branch="${BRANCH:-main}"
+  local repo="bobywan/boby-boilerplate"
+  local base_url="https://raw.githubusercontent.com/${repo}/${branch}"
+
+  local reset="\033[0m" bold="\033[1m" green="\033[32m"
+  local yellow="\033[33m" red="\033[31m" dim="\033[2m"
+
+  echo ""
+  echo -e "${bold}  Check depuis ${yellow}${repo}${reset}${bold} (${branch})${reset}"
+  echo ""
+
+  local tmp_dir
+  tmp_dir="$(mktemp -d)"
+  trap 'rm -rf "$tmp_dir"' EXIT
+
+  local files=()
+  while IFS= read -r f; do [[ -n "$f" ]] && files+=("$f"); done < <(_list_files)
+
+  local all_ok=0
+
+  for file in "${files[@]}"; do
+    local tmp_file="${tmp_dir}/$(echo "$file" | tr '/' '_')"
+    if ! curl -fsSL "${base_url}/${file}" -o "$tmp_file" 2>/dev/null; then
+      echo -e "  ${yellow}?${reset} ${file} ${dim}(introuvable sur ${branch})${reset}"
+      all_ok=1
+      continue
+    fi
+    if [ ! -f "$file" ]; then
+      echo -e "  ${yellow}?${reset} ${file} ${dim}(absent localement)${reset}"
+      all_ok=1
+      continue
+    fi
+    local h_local h_remote
+    h_local="$(_sha256 "$file")"
+    h_remote="$(_sha256 "$tmp_file")"
+    if [ "$h_local" = "$h_remote" ]; then
+      echo -e "  ${green}✓${reset} ${file}"
+    else
+      echo -e "  ${red}✗${reset} ${file} ${dim}(différent)${reset}"
+      all_ok=1
+    fi
+  done
+
+  # Vérification du script lui-même
+  local self_tmp="${tmp_dir}/sync-boilerplate.sh"
+  if curl -fsSL "${base_url}/scripts/sync-boilerplate.sh" -o "$self_tmp" 2>/dev/null; then
+    local h_self h_self_remote
+    h_self="$(_sha256 "$0")"
+    h_self_remote="$(_sha256 "$self_tmp")"
+    if [ "$h_self" = "$h_self_remote" ]; then
+      echo -e "  ${green}✓${reset} scripts/sync-boilerplate.sh"
+    else
+      echo -e "  ${red}✗${reset} scripts/sync-boilerplate.sh ${dim}(différent)${reset}"
+      all_ok=1
+    fi
+  else
+    echo -e "  ${yellow}?${reset} scripts/sync-boilerplate.sh ${dim}(introuvable sur ${branch})${reset}"
+    all_ok=1
+  fi
+
+  echo ""
+  if [ "$all_ok" -eq 0 ]; then
+    echo -e "  ${bold}${green}Tout est à jour.${reset}"
+  else
+    echo -e "  ${bold}${red}Des fichiers diffèrent ou sont absents.${reset} Lance ${yellow}npm run sync${reset} pour mettre à jour."
+  fi
+  echo ""
+
+  trap - EXIT
+  rm -rf "$tmp_dir"
+  return "$all_ok"
+}
+
 main() {
   local REPO="bobywan/boby-boilerplate"
   local BRANCH="${BRANCH:-main}"
@@ -35,31 +185,8 @@ main() {
 
   local errors=0
 
-  # Fichiers universels
-  # Note : sync-boilerplate.sh lui-même n'est pas auto-mis à jour pour éviter
-  # un bug de lecture de fichier remplacé en cours d'exécution. Pour le mettre
-  # à jour manuellement : curl -fsSL ${BASE_URL}/scripts/sync-boilerplate.sh -o scripts/sync-boilerplate.sh
-  local files=(
-    "biome.json"
-    ".nvmrc"
-    ".vscode/settings.json"
-    ".vscode/extensions.json"
-    ".cursor/rules/project-stack.mdc"
-    ".cursor/rules/typescript-react.mdc"
-    ".cursor/rules/tailwind.mdc"
-    ".cursor/skills/boilerplate-conventions/SKILL.md"
-    "scripts/init-project.sh"
-  )
-
-  # Fichiers Next.js uniquement
-  if [ "$is_nextjs" = true ]; then
-    files+=(
-      "tsconfig.json"
-      ".github/workflows/ci.yml"
-      ".cursor/rules/nextjs-app-router.mdc"
-      "scripts/dev-start.mjs"
-    )
-  fi
+  local files=()
+  while IFS= read -r f; do [[ -n "$f" ]] && files+=("$f"); done < <(_list_files)
 
   for file in "${files[@]}"; do
     local dir
@@ -164,5 +291,16 @@ sync_gitignore() {
 
   rm -f "$tmp_remote"
 }
+
+_self_update "$@"
+
+for arg in "$@"; do
+  case "$arg" in
+    --check|-c)
+      _check_mode || exit 1
+      exit 0
+      ;;
+  esac
+done
 
 main "$@"

@@ -1,0 +1,39 @@
+---
+description: Sécurité — secrets, validation des entrées, headers HTTP, dépendances.
+alwaysApply: false
+globs: "**/*.{ts,tsx}"
+---
+
+# Sécurité
+
+## Secrets et variables d'environnement
+
+- Aucun secret (clé API, token, mot de passe) en dur dans le code source.
+- Tout secret passe par `.env.local` (gitignored) et est documenté dans `.env.example` avec une valeur fictive.
+- `NEXT_PUBLIC_*` uniquement pour les valeurs non sensibles destinées au client.
+
+## Validation des entrées
+
+- Toute entrée externe (formulaires, query params, body de requête, données tierces) est validée avant usage.
+- Utilise un schema de validation (Zod, Valibot, ou validation manuelle explicite) pour les Route Handlers.
+- Ne fais jamais confiance aux données venant du client — valide côté serveur.
+
+## Headers HTTP
+
+Le `next.config.ts` ajoute déjà :
+- `X-Frame-Options: DENY`
+- `X-Content-Type-Options: nosniff`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+
+Ne pas les supprimer. Ajoute `Content-Security-Policy` si tu introduis du contenu dynamique tiers.
+
+## Dépendances
+
+- N'ajoute pas de dépendance sans vérifier : popularité, maintenance active, surface d'attaque.
+- Préfère une implémentation native si elle est triviale (quelques lignes) plutôt qu'un package.
+- `npm audit` après chaque ajout de dépendance.
+
+## Accès base de données et APIs
+
+- Paramètre toutes les requêtes SQL — jamais de concaténation de chaînes.
+- Limite les permissions des tokens/clés au strict nécessaire (principe de moindre privilège).

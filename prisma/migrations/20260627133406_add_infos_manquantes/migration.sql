@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "StatutDemande" ADD VALUE 'INFOS_MANQUANTES';

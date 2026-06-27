@@ -1,0 +1,43 @@
+---
+description: Documentation — quoi documenter, comment, où stocker les décisions.
+alwaysApply: false
+globs: "**/*.{ts,tsx,md}"
+---
+
+# Documentation
+
+## Ce qu'il faut documenter
+
+- Les décisions d'architecture non évidentes → `.ai/decisions.md`
+- Les compromis techniques acceptés (`ponytail:` comment inline + entrée dans decisions.md)
+- Les contraintes métier qui influencent le code
+- Les prérequis d'installation non standards → `README.md`
+
+## Ce qu'il ne faut pas documenter
+
+- Ce que le code exprime déjà clairement
+- Les commentaires qui narrent le code (`// loop through items`, `// return result`)
+- Les JSDoc automatiques sans valeur ajoutée
+
+## Format des décisions (`.ai/decisions.md`)
+
+```markdown
+## [DATE] Titre de la décision
+
+**Contexte :** Pourquoi cette décision a été nécessaire.
+**Décision :** Ce qui a été choisi.
+**Alternatives écartées :** Ce qui a été considéré mais rejeté, et pourquoi.
+**Conséquences :** Impact attendu (positif et négatif).
+```
+
+## README
+
+- Maintiens la section "Démarrage rapide" à jour si tu modifies le processus d'installation.
+- Toute nouvelle dépendance globale (installée avec `-g`) doit apparaître dans le README.
+- La section "AI Development Environment" documente les outils IA du projet.
+
+## Commentaires inline
+
+- Commente l'intention, pas le mécanisme.
+- Un bon commentaire répond à "pourquoi ?" pas à "quoi ?".
+- Pour les hacks temporaires : `// HACK: [raison] — supprimer quand [condition]`.

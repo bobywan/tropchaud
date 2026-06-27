@@ -1,150 +1,179 @@
-# boby-boilerplate
+# TropChaud
 
-[![CI](https://github.com/bobywan/boby-boilerplate/actions/workflows/ci.yml/badge.svg)](https://github.com/bobywan/boby-boilerplate/actions/workflows/ci.yml)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
-[![Node](https://img.shields.io/badge/Node.js-24%20LTS-green?logo=node.js)](https://nodejs.org/)
-[![Biome](https://img.shields.io/badge/Biome-lint%20%26%20format-60A5FA?logo=biome)](https://biomejs.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+Application web de gestion des demandes de devis pour un artisan en climatisation.
 
-Boilerplate Next.js (App Router) fullstack, prêt à l'emploi pour démarrer un nouveau projet rapidement.
+- Les clients déposent une demande et reçoivent un code de suivi unique (`CLIM-XXXXXX`).
+- L'artisan gère les demandes depuis un espace admin sécurisé et peut uploader les devis PDF.
 
-## Stack
+---
 
-| Outil      | Usage                        |
-| ---------- | ---------------------------- |
-| Next.js 16 | Framework fullstack          |
-| TypeScript | Typage strict                |
-| BiomeJS    | Lint + format (remplace ESLint + Prettier) |
-| Node.js 24 | Runtime LTS                  |
+## Stack technique
 
-## Démarrage rapide
+| Couche | Outil |
+|--------|-------|
+| Framework | Next.js 16 (App Router) |
+| Langage | TypeScript strict |
+| Styles | Tailwind CSS v4 |
+| Base de données | PostgreSQL + Prisma 7 |
+| Authentification | Auth.js v5 (NextAuth) |
+| Stockage fichiers | MinIO (S3 compatible) |
+| Déploiement | Docker + NAS Synology |
+
+---
+
+## Installation (développement local)
+
+### Prérequis
+
+- Node.js >= 24
+- Docker & Docker Compose
+
+### 1. Cloner le dépôt
 
 ```bash
-# 1. Créer le projet depuis le boilerplate (sans historique git)
-npx degit bobywan/boby-boilerplate mon-projet
-cd mon-projet
-git init
+git clone <url-du-depot>
+cd tropchaud
+```
 
-# 2. Utiliser la bonne version de Node (nvm ou fnm)
-nvm use   # ou: fnm use
+### 2. Configurer les variables d'environnement
 
-# 3. Installer les dépendances
-npm install
-
-# 4. Initialiser le projet (renomme le workspace, met à jour package.json)
-npm run init-project
-
-# 5. Copier les variables d'environnement
+```bash
 cp .env.example .env.local
+```
 
-# 6. Lancer le serveur de développement
+Éditer `.env.local` et adapter les valeurs :
+
+```env
+DATABASE_URL=postgresql://tropchaud:motdepasse@localhost:5432/tropchaud
+AUTH_SECRET=<générer avec : openssl rand -base64 32>
+MINIO_ENDPOINT=localhost
+MINIO_PORT=9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+MINIO_BUCKET=tropchaud
+MINIO_USE_SSL=false
+```
+
+### 3. Démarrer les services (PostgreSQL + MinIO)
+
+```bash
+docker compose up -d postgres minio
+```
+
+### 4. Appliquer les migrations
+
+```bash
+npm run db:migrate
+```
+
+### 5. Créer le compte administrateur
+
+```bash
+npm run db:seed
+```
+
+### 6. Lancer l'application
+
+```bash
 npm run dev
-```
-
-L'application sera disponible sur [http://localhost:3000](http://localhost:3000).
-
-## Mise à jour depuis le boilerplate
-
-### Projet qui utilise déjà le boilerplate
-
-```bash
-npm run sync
-```
-
-### Projet existant sans le boilerplate (première fois)
-
-Copie le script de sync dans le projet, puis lance-le :
-
-```bash
-mkdir -p scripts \
-  && curl -fsSL https://raw.githubusercontent.com/bobywan/boby-boilerplate/main/scripts/sync-boilerplate.sh \
-     -o scripts/sync-boilerplate.sh \
-  && chmod +x scripts/sync-boilerplate.sh \
-  && ./scripts/sync-boilerplate.sh
 ```
 
 ---
 
-Le script télécharge uniquement les fichiers "infrastructure" depuis la branche `main` du boilerplate. Le code applicatif (`app/`, `next.config.ts`, `package.json`, `.env.example`, `README.md`) n'est jamais écrasé.
+## Déploiement sur NAS Synology via Portainer
 
-Pour pointer vers une autre branche :
+### Prérequis
 
-```bash
-BRANCH=feat/xxx npm run sync
+- Portainer installé sur le NAS
+- Reverse proxy Synology configuré (HTTPS + domaine personnalisé)
+
+### 1. Préparer les fichiers sur le NAS
+
+Créer un dossier sur le NAS (ex : `/volume1/docker/tropchaud`) et y déposer :
+- `docker-compose.yml`
+- `.env` (copié depuis `.env.example` avec les vraies valeurs)
+
+### 2. Variables d'environnement de production
+
+```env
+DATABASE_URL=postgresql://tropchaud:<mot-de-passe-fort>@postgres:5432/tropchaud
+AUTH_SECRET=<chaine-aleatoire-securisee-32-chars>
+MINIO_ENDPOINT=minio
+MINIO_PORT=9000
+MINIO_ACCESS_KEY=<acces-key-fort>
+MINIO_SECRET_KEY=<secret-key-fort>
+MINIO_BUCKET=tropchaud
+MINIO_USE_SSL=false
+NEXT_PUBLIC_APP_URL=https://votre-domaine.fr
 ```
 
-> Après une sync, inspecte les changements avec `git diff` avant de commiter.
+### 3. Déployer via Portainer
+
+Dans Portainer > Stacks > Add stack, coller le contenu du `docker-compose.yml` ou pointer vers le fichier.
+
+### 4. Appliquer les migrations en production
+
+```bash
+docker compose exec app npm run db:migrate
+```
+
+### 5. Créer le compte admin en production
+
+```bash
+docker compose exec app npm run db:seed
+```
+
+---
 
 ## Scripts disponibles
 
-| Commande             | Description                              |
-| -------------------- | ---------------------------------------- |
-| `npm run dev`        | Lance le serveur de dev avec message de démarrage |
-| `npm run build`      | Build de production                      |
-| `npm run start`      | Démarre le serveur de production         |
-| `npm run init-project` | Renomme le workspace et met à jour package.json |
-| `npm run typecheck`  | Vérifie les types TypeScript             |
-| `npm run sync`       | Synchronise les configs depuis le boilerplate |
-| `npm run lint`       | Analyse le code avec Biome               |
-| `npm run format`     | Formate le code avec Biome               |
-| `npm run check`      | Lint + format + imports en une commande  |
-| `npm run ci`         | Vérification CI (lecture seule)          |
+```bash
+npm run dev          # Démarrage en développement
+npm run build        # Build de production
+npm run start        # Démarrage en production
+npm run check        # Lint + format (BiomeJS)
+npm run typecheck    # Vérification TypeScript
+npm run db:migrate   # Appliquer les migrations Prisma
+npm run db:seed      # Créer le compte administrateur
+```
+
+---
+
+## Sauvegardes
+
+### Base de données (PostgreSQL)
+
+```bash
+docker compose exec postgres pg_dump -U tropchaud tropchaud > backup_$(date +%Y%m%d).sql
+```
+
+### Fichiers (MinIO)
+
+Les données MinIO sont persistées dans le volume Docker `minio_data`. Sauvegarder ce volume régulièrement depuis l'interface Portainer ou via `rsync`.
+
+---
 
 ## Structure du projet
 
 ```
-.
-├── .github/workflows/ci.yml   # GitHub Actions CI
-├── .vscode/                   # Config VSCode / Cursor
-├── app/                       # App Router Next.js
-│   ├── error.tsx
-│   ├── layout.tsx
-│   ├── loading.tsx
-│   ├── not-found.tsx
-│   └── page.tsx
-├── public/                    # Assets statiques
-├── scripts/
-│   ├── dev-start.mjs          # Message de démarrage
-│   ├── init-project.sh        # Initialisation d'un nouveau projet
-│   └── sync-boilerplate.sh    # Synchronisation depuis le boilerplate
-├── .env.example               # Variables d'env (template)
-├── .nvmrc                     # Node 24 LTS
-├── biome.json                 # Config Biome (lint + format)
-├── next.config.ts
-├── tsconfig.json
-└── boby-boilerplate.code-workspace
+app/
+├── page.tsx                 # Formulaire de demande de devis
+├── confirmation/            # Affichage du code après soumission
+├── suivi/                   # Suivi de demande par code
+├── admin/                   # Espace administrateur
+└── api/                     # API Routes
+
+lib/
+├── prisma.ts                # Client Prisma
+├── auth.ts                  # Config Auth.js
+├── minio.ts                 # Client MinIO/S3
+├── code.ts                  # Génération code CLIM-XXXXXX
+└── validations.ts           # Schémas Zod
+
+services/
+├── demandes.ts              # Logique métier demandes
+└── fichiers.ts              # Logique uploads/downloads
+
+prisma/
+└── schema.prisma            # Modèle de données
 ```
-
-## Variables d'environnement
-
-Copie `.env.example` vers `.env.local` et renseigne les valeurs :
-
-```bash
-cp .env.example .env.local
-```
-
-> Les fichiers `.env*` sont ignorés par git (sauf `.env.example`).
-
-## Headroom — compression de contexte IA
-
-Ce boilerplate embarque une configuration [Headroom](https://github.com/chopratejas/headroom) dans `.cursor/mcp.json`. Headroom est un serveur MCP qui compresse automatiquement le contexte envoyé aux LLMs (60–95% de tokens économisés).
-
-**Prérequis machine (une seule fois) :**
-
-```bash
-# Python 3.10+ requis
-pip install "headroom-ai[mcp]"
-```
-
-**Vérifier que Cursor détecte le serveur :**
-
-```bash
-headroom mcp status
-```
-
-Une fois installé, les agents Cursor travaillant sur ce projet ont automatiquement accès aux outils `headroom_compress`, `headroom_retrieve` et `headroom_stats`.
-
-## Licence
-
-MIT
