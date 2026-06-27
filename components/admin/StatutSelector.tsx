@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Button } from "@/components/ui/Button";
 import { modifierStatutAction } from "@/app/actions/admin";
 import type { StatutDemande } from "@/app/generated/prisma/client";
+import { Button } from "@/components/ui/Button";
 
 const STATUTS: { value: StatutDemande; label: string }[] = [
   { value: "NOUVELLE", label: "Nouvelle demande" },
@@ -51,12 +51,7 @@ export function StatutSelector({ demandeId, statutActuel }: Props) {
 
       {erreur && <p className="text-xs text-red-600">{erreur}</p>}
 
-      <Button
-        onClick={handleSave}
-        loading={isPending}
-        disabled={statut === statutActuel}
-        size="sm"
-      >
+      <Button onClick={handleSave} loading={isPending} disabled={statut === statutActuel} size="sm">
         Enregistrer
       </Button>
     </div>

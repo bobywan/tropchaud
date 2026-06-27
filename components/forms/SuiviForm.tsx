@@ -1,17 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
 import { verifierSuiviAction } from "@/app/actions/demandes";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
-const initialState = {};
+const initialState: { erreur?: string } = {};
 
 export function SuiviForm() {
-  const [state, action, pending] = useActionState(
-    verifierSuiviAction,
-    initialState,
-  );
+  const [state, action, pending] = useActionState(verifierSuiviAction, initialState);
 
   return (
     <form action={action} className="flex flex-col gap-4">

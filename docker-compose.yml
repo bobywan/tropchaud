@@ -1,4 +1,17 @@
 services:
+  migrate:
+    build:
+      context: .
+      target: migrator
+    restart: "no"
+    environment:
+      DATABASE_URL: postgresql://tropchaud:${POSTGRES_PASSWORD:-motdepasse}@postgres:5432/tropchaud
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tropchaud
+
   app:
     build: .
     restart: unless-stopped
@@ -19,6 +32,8 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - tropchaud
 

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDemandePourClient } from "@/services/demandes";
-import { getUrlDevis, getUrlsFichiersPourClient } from "@/services/fichiers";
 import { StatutBadge } from "@/components/ui/Badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { getDemandePourClient } from "@/services/demandes";
+import { getUrlDevis, getUrlsFichiersPourClient } from "@/services/fichiers";
 
 const STATUTS_MODIFIABLES = ["NOUVELLE", "INFOS_MANQUANTES"];
 
@@ -38,17 +38,12 @@ export default async function SuiviDetailPage({ params }: Props) {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
           <div className="mb-4 text-4xl">🔍</div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">
-            Demande introuvable
-          </h1>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">Demande introuvable</h1>
           <p className="text-gray-500 text-sm mb-6">
-            Aucune demande ne correspond au code{" "}
-            <span className="font-mono font-bold">{code}</span>.
+            Aucune demande ne correspond au code <span className="font-mono font-bold">{code}</span>
+            .
           </p>
-          <Link
-            href="/suivi"
-            className="text-blue-600 hover:underline text-sm font-medium"
-          >
+          <Link href="/suivi" className="text-blue-600 hover:underline text-sm font-medium">
             ← Réessayer avec un autre code
           </Link>
         </div>
@@ -69,10 +64,7 @@ export default async function SuiviDetailPage({ params }: Props) {
             <span className="text-2xl">❄️</span>
             <span className="text-xl font-bold text-gray-900">TropChaud</span>
           </Link>
-          <Link
-            href="/suivi"
-            className="text-sm text-gray-500 hover:text-gray-700"
-          >
+          <Link href="/suivi" className="text-sm text-gray-500 hover:text-gray-700">
             ← Autre code
           </Link>
         </div>
@@ -85,17 +77,15 @@ export default async function SuiviDetailPage({ params }: Props) {
               Des informations complémentaires vous sont demandées
             </p>
             <p className="text-sm text-orange-700">
-              L'artisan a besoin de précisions pour traiter votre demande.
-              Veuillez modifier votre demande en cliquant sur le bouton ci-dessous.
+              L'artisan a besoin de précisions pour traiter votre demande. Veuillez modifier votre
+              demande en cliquant sur le bouton ci-dessous.
             </p>
           </div>
         )}
 
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">
-              Demande de devis
-            </h1>
+            <h1 className="text-xl font-bold text-gray-900">Demande de devis</h1>
             <p className="font-mono text-sm text-gray-500">{code}</p>
           </div>
           <div className="flex items-center gap-3">
@@ -118,9 +108,7 @@ export default async function SuiviDetailPage({ params }: Props) {
           <CardBody>
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                  Nom
-                </dt>
+                <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">Nom</dt>
                 <dd className="mt-1 text-sm text-gray-900">
                   {demande.prenom} {demande.nom}
                 </dd>
@@ -129,31 +117,23 @@ export default async function SuiviDetailPage({ params }: Props) {
                 <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">
                   Téléphone
                 </dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {demande.telephone}
-                </dd>
+                <dd className="mt-1 text-sm text-gray-900">{demande.telephone}</dd>
               </div>
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                  Email
-                </dt>
+                <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">Email</dt>
                 <dd className="mt-1 text-sm text-gray-900">{demande.email}</dd>
               </div>
               <div>
                 <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">
                   Adresse
                 </dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {demande.adresse}
-                </dd>
+                <dd className="mt-1 text-sm text-gray-900">{demande.adresse}</dd>
               </div>
               <div className="sm:col-span-2">
                 <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">
                   Date de dépôt
                 </dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {formatDate(demande.createdAt)}
-                </dd>
+                <dd className="mt-1 text-sm text-gray-900">{formatDate(demande.createdAt)}</dd>
               </div>
             </dl>
           </CardBody>
@@ -164,18 +144,14 @@ export default async function SuiviDetailPage({ params }: Props) {
             <h2 className="font-semibold text-gray-800">Votre message</h2>
           </CardHeader>
           <CardBody>
-            <p className="text-sm text-gray-700 whitespace-pre-wrap">
-              {demande.message}
-            </p>
+            <p className="text-sm text-gray-700 whitespace-pre-wrap">{demande.message}</p>
           </CardBody>
         </Card>
 
         {urlsFichiers.length > 0 && (
           <Card>
             <CardHeader>
-              <h2 className="font-semibold text-gray-800">
-                Vos documents ({urlsFichiers.length})
-              </h2>
+              <h2 className="font-semibold text-gray-800">Vos documents ({urlsFichiers.length})</h2>
             </CardHeader>
             <CardBody>
               <ul className="flex flex-col gap-2">
@@ -184,9 +160,7 @@ export default async function SuiviDetailPage({ params }: Props) {
                     key={f.url}
                     className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-4 py-3"
                   >
-                    <span className="text-sm text-gray-700 truncate max-w-xs">
-                      {f.nom}
-                    </span>
+                    <span className="text-sm text-gray-700 truncate max-w-xs">{f.nom}</span>
                     <a
                       href={f.url}
                       target="_blank"
@@ -210,12 +184,8 @@ export default async function SuiviDetailPage({ params }: Props) {
             {demande.statut === "DEVIS_DISPONIBLE" && urlDevis ? (
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    Votre devis est disponible !
-                  </p>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {demande.devis?.nom}
-                  </p>
+                  <p className="text-sm font-medium text-gray-900">Votre devis est disponible !</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{demande.devis?.nom}</p>
                 </div>
                 <a
                   href={urlDevis}
@@ -228,8 +198,7 @@ export default async function SuiviDetailPage({ params }: Props) {
               </div>
             ) : (
               <p className="text-sm text-gray-500">
-                Votre devis n'est pas encore disponible. Nous vous contacterons
-                dès qu'il sera prêt.
+                Votre devis n'est pas encore disponible. Nous vous contacterons dès qu'il sera prêt.
               </p>
             )}
           </CardBody>

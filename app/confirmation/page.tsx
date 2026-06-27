@@ -26,9 +26,7 @@ export default async function ConfirmationPage({ searchParams }: Props) {
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Demande envoyée !
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Demande envoyée !</h1>
         <p className="text-gray-500 mb-8">
           Votre demande de devis a bien été reçue. Je vous contacterai rapidement.
         </p>
@@ -41,8 +39,8 @@ export default async function ConfirmationPage({ searchParams }: Props) {
             </span>
           </div>
           <p className="text-sm text-gray-500">
-            Conservez ce code précieusement. Il vous permettra de consulter
-            l'état de votre demande et de télécharger votre devis.
+            Conservez ce code précieusement. Il vous permettra de consulter l'état de votre demande
+            et de télécharger votre devis.
           </p>
           <p className="text-sm text-gray-400 mt-2">
             Votre adresse email vous sera également demandée lors de la consultation.
@@ -56,10 +54,7 @@ export default async function ConfirmationPage({ searchParams }: Props) {
           >
             Suivre ma demande
           </Link>
-          <Link
-            href="/"
-            className="text-sm text-gray-500 hover:text-gray-700 hover:underline"
-          >
+          <Link href="/" className="text-sm text-gray-500 hover:text-gray-700 hover:underline">
             Retour à l'accueil
           </Link>
         </div>

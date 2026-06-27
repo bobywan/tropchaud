@@ -1,14 +1,11 @@
-import { prisma } from "@/lib/prisma";
-import { uploadFichier, supprimerFichier, getUrlSignee } from "@/lib/minio";
 import { randomUUID } from "node:crypto";
+import { getUrlSignee, supprimerFichier, uploadFichier } from "@/lib/minio";
+import { prisma } from "@/lib/prisma";
 
 const DOSSIER_FICHIERS = "fichiers";
 const DOSSIER_DEVIS = "devis";
 
-export async function ajouterFichiersDemande(
-  demandeId: string,
-  fichiers: File[],
-): Promise<void> {
+export async function ajouterFichiersDemande(demandeId: string, fichiers: File[]): Promise<void> {
   for (const fichier of fichiers) {
     const cle = `${DOSSIER_FICHIERS}/${demandeId}/${randomUUID()}-${fichier.name}`;
     const buffer = Buffer.from(await fichier.arrayBuffer());
@@ -27,10 +24,7 @@ export async function ajouterFichiersDemande(
   }
 }
 
-export async function ajouterDevis(
-  demandeId: string,
-  fichier: File,
-): Promise<void> {
+export async function ajouterDevis(demandeId: string, fichier: File): Promise<void> {
   const existant = await prisma.devis.findUnique({ where: { demandeId } });
 
   if (existant) {
@@ -69,10 +63,7 @@ export async function getUrlDevis(demandeId: string): Promise<string | null> {
   return getUrlSignee(devis.cle);
 }
 
-export async function supprimerFichierDemande(
-  fichierId: string,
-  demandeId: string,
-): Promise<void> {
+export async function supprimerFichierDemande(fichierId: string, demandeId: string): Promise<void> {
   const fichier = await prisma.fichier.findFirst({
     where: { id: fichierId, demandeId },
     select: { cle: true },
@@ -82,13 +73,9 @@ export async function supprimerFichierDemande(
   await prisma.fichier.delete({ where: { id: fichierId } });
 }
 
-export async function getUrlsFichiers(
-  demandeId: string,
-): Promise<{ nom: string; url: string }[]> {
+export async function getUrlsFichiers(demandeId: string): Promise<{ nom: string; url: string }[]> {
   const fichiers = await prisma.fichier.findMany({ where: { demandeId } });
-  return Promise.all(
-    fichiers.map(async (f) => ({ nom: f.nom, url: await getUrlSignee(f.cle) })),
-  );
+  return Promise.all(fichiers.map(async (f) => ({ nom: f.nom, url: await getUrlSignee(f.cle) })));
 }
 
 export async function getUrlsFichiersPourClient(

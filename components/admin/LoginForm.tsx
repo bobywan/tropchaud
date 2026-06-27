@@ -1,9 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
 import { loginAction } from "@/app/actions/auth";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 type FormState = { erreur?: string };
 

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { listerDemandesAdmin } from "@/services/demandes";
 import { StatutBadge } from "@/components/ui/Badge";
+import { listerDemandesAdmin } from "@/services/demandes";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Tableau de bord" };
 
 function formatDate(date: Date) {
@@ -29,47 +30,33 @@ export default async function DashboardPage() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Gestion des demandes de devis
-        </p>
+        <p className="text-sm text-gray-500 mt-1">Gestion des demandes de devis</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-8 lg:grid-cols-3 xl:grid-cols-6">
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
           <p className="text-sm text-gray-500">Total</p>
-          <p className="text-3xl font-bold text-gray-900 mt-1">
-            {stats.total}
-          </p>
+          <p className="text-3xl font-bold text-gray-900 mt-1">{stats.total}</p>
         </div>
         <div className="rounded-xl border border-blue-100 bg-blue-50 p-5">
           <p className="text-sm text-blue-600">Nouvelles</p>
-          <p className="text-3xl font-bold text-blue-700 mt-1">
-            {stats.nouvelles}
-          </p>
+          <p className="text-3xl font-bold text-blue-700 mt-1">{stats.nouvelles}</p>
         </div>
         <div className="rounded-xl border border-yellow-100 bg-yellow-50 p-5">
           <p className="text-sm text-yellow-700">En cours</p>
-          <p className="text-3xl font-bold text-yellow-800 mt-1">
-            {stats.enCours}
-          </p>
+          <p className="text-3xl font-bold text-yellow-800 mt-1">{stats.enCours}</p>
         </div>
         <div className="rounded-xl border border-orange-100 bg-orange-50 p-5">
           <p className="text-sm text-orange-700">Infos manquantes</p>
-          <p className="text-3xl font-bold text-orange-800 mt-1">
-            {stats.infosManquantes}
-          </p>
+          <p className="text-3xl font-bold text-orange-800 mt-1">{stats.infosManquantes}</p>
         </div>
         <div className="rounded-xl border border-green-100 bg-green-50 p-5">
           <p className="text-sm text-green-700">Devis envoyés</p>
-          <p className="text-3xl font-bold text-green-800 mt-1">
-            {stats.devisDisponible}
-          </p>
+          <p className="text-3xl font-bold text-green-800 mt-1">{stats.devisDisponible}</p>
         </div>
         <div className="rounded-xl border border-gray-100 bg-gray-50 p-5">
           <p className="text-sm text-gray-500">Terminées</p>
-          <p className="text-3xl font-bold text-gray-700 mt-1">
-            {stats.terminees}
-          </p>
+          <p className="text-3xl font-bold text-gray-700 mt-1">{stats.terminees}</p>
         </div>
       </div>
 
@@ -105,10 +92,7 @@ export default async function DashboardPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {demandes.map((demande) => (
-                  <tr
-                    key={demande.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
+                  <tr key={demande.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <span className="font-mono text-sm font-medium text-gray-700">
                         {demande.code}

@@ -1,0 +1,12 @@
+node_modules
+.next
+dist
+out
+coverage
+.git
+.env*
+*.code-workspace
+.cursor
+.vscode
+README.md
+PLAN.md

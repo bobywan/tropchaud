@@ -1,8 +1,8 @@
 import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
   DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -39,10 +39,7 @@ export async function uploadFichier(params: {
   );
 }
 
-export async function getUrlSignee(
-  cle: string,
-  expiresIn = 3600,
-): Promise<string> {
+export async function getUrlSignee(cle: string, expiresIn = 3600): Promise<string> {
   const command = new GetObjectCommand({ Bucket: BUCKET, Key: cle });
   return getSignedUrl(s3, command, { expiresIn });
 }

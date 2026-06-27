@@ -26,10 +26,7 @@ export function Badge({ children, variant = "gray" }: BadgeProps) {
   );
 }
 
-const STATUT_CONFIG: Record<
-  StatutDemande,
-  { label: string; variant: BadgeVariant }
-> = {
+const STATUT_CONFIG: Record<StatutDemande, { label: string; variant: BadgeVariant }> = {
   NOUVELLE: { label: "Nouvelle demande", variant: "blue" },
   EN_COURS: { label: "En cours", variant: "yellow" },
   INFOS_MANQUANTES: { label: "Informations manquantes", variant: "orange" },
