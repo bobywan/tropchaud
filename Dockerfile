@@ -29,6 +29,17 @@ COPY prisma.config.ts .
 
 CMD ["node", "node_modules/prisma/build/index.js", "migrate", "deploy"]
 
+# ─── Seeder (crée/met à jour le compte admin) ──────────────────────────────────
+FROM base AS seeder
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/app/generated ./app/generated
+COPY prisma ./prisma
+COPY prisma.config.ts .
+
+CMD ["node_modules/.bin/tsx", "prisma/seed.ts"]
+
 # ─── Production ────────────────────────────────────────────────────────────────
 FROM base AS runner
 WORKDIR /app
