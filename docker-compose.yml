@@ -12,6 +12,21 @@ services:
     networks:
       - tropchaud
 
+  seeder:
+    build:
+      context: .
+      target: seeder
+    restart: "no"
+    environment:
+      DATABASE_URL: postgresql://tropchaud:${POSTGRES_PASSWORD:-motdepasse}@postgres:5432/tropchaud
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@tropchaud.fr}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - tropchaud
+
   app:
     build: .
     restart: unless-stopped
@@ -26,6 +41,7 @@ services:
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_BUCKET: ${MINIO_BUCKET:-tropchaud}
       MINIO_USE_SSL: ${MINIO_USE_SSL:-false}
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
     depends_on:
       postgres:
@@ -33,6 +49,8 @@ services:
       minio:
         condition: service_healthy
       migrate:
+        condition: service_completed_successfully
+      seeder:
         condition: service_completed_successfully
     networks:
       - tropchaud
