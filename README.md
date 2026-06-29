@@ -35,44 +35,49 @@ git clone <url-du-depot>
 cd tropchaud
 ```
 
-### 2. Configurer les variables d'environnement
+### 2. Installer les dépendances
 
 ```bash
-cp .env.example .env.local
+npm install
 ```
 
-Éditer `.env.local` et adapter les valeurs :
+Le client Prisma est généré automatiquement via le script `postinstall`.
+
+### 3. Configurer les variables d'environnement
+
+```bash
+cp .env.example .env
+```
+
+Éditer `.env` et adapter les valeurs (`POSTGRES_PASSWORD`, `AUTH_SECRET`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `ADMIN_PASSWORD`). Le `DATABASE_URL` pointe déjà sur `localhost:5433` (port hôte Docker Compose).
+
+Créer ensuite un fichier `.env.local` pour que le dev server Next.js contacte MinIO via le port hôte :
 
 ```env
-DATABASE_URL=postgresql://tropchaud:motdepasse@localhost:5432/tropchaud
-AUTH_SECRET=<générer avec : openssl rand -base64 32>
+# .env.local
 MINIO_ENDPOINT=localhost
-MINIO_PORT=9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
-MINIO_BUCKET=tropchaud
-MINIO_USE_SSL=false
+MINIO_PORT=9010
 ```
 
-### 3. Démarrer les services (PostgreSQL + MinIO)
+### 4. Démarrer les services (PostgreSQL + MinIO)
 
 ```bash
-docker compose up -d postgres minio
+docker compose up -d postgres minio createbuckets
 ```
 
-### 4. Appliquer les migrations
+### 5. Appliquer les migrations
 
 ```bash
 npm run db:migrate
 ```
 
-### 5. Créer le compte administrateur
+### 6. Créer le compte administrateur
 
 ```bash
 npm run db:seed
 ```
 
-### 6. Lancer l'application
+### 7. Lancer l'application
 
 ```bash
 npm run dev
@@ -87,41 +92,33 @@ npm run dev
 - Portainer installé sur le NAS
 - Reverse proxy Synology configuré (HTTPS + domaine personnalisé)
 
-### 1. Préparer les fichiers sur le NAS
+### 1. Configurer la stack dans Portainer
 
-Créer un dossier sur le NAS (ex : `/volume1/docker/tropchaud`) et y déposer :
-- `docker-compose.yml`
-- `.env` (copié depuis `.env.example` avec les vraies valeurs)
+Dans Portainer > **Stacks > Add stack** :
+- **Build method** : Repository
+- **Repository URL** : `https://github.com/bobywan/tropchaud`
+- **Authentication** : activé, avec ton nom d'utilisateur GitHub et un Personal Access Token (scope `repo`)
+- **Compose path** : `docker-compose.yml`
 
 ### 2. Variables d'environnement de production
 
+Dans l'onglet **Environment variables** de la stack Portainer, ajouter :
+
 ```env
-DATABASE_URL=postgresql://tropchaud:<mot-de-passe-fort>@postgres:5432/tropchaud
-AUTH_SECRET=<chaine-aleatoire-securisee-32-chars>
-MINIO_ENDPOINT=minio
-MINIO_PORT=9000
+POSTGRES_PASSWORD=<mot-de-passe-fort>
+AUTH_SECRET=<chaine-aleatoire-32-chars : openssl rand -base64 32>
+AUTH_URL=https://votre-domaine.fr
 MINIO_ACCESS_KEY=<acces-key-fort>
 MINIO_SECRET_KEY=<secret-key-fort>
-MINIO_BUCKET=tropchaud
-MINIO_USE_SSL=false
+MINIO_PUBLIC_URL=http://votre-domaine.fr:9010
+ADMIN_EMAIL=admin@votre-domaine.fr
+ADMIN_PASSWORD=<mot-de-passe-admin>
 NEXT_PUBLIC_APP_URL=https://votre-domaine.fr
 ```
 
-### 3. Déployer via Portainer
+### 3. Déployer
 
-Dans Portainer > Stacks > Add stack, coller le contenu du `docker-compose.yml` ou pointer vers le fichier.
-
-### 4. Appliquer les migrations en production
-
-```bash
-docker compose exec app npm run db:migrate
-```
-
-### 5. Créer le compte admin en production
-
-```bash
-docker compose exec app npm run db:seed
-```
+Cliquer sur **Deploy the stack**. Les services `migrate` et `seeder` s'exécutent automatiquement au démarrage — aucune commande manuelle n'est nécessaire.
 
 ---
 

@@ -9,6 +9,7 @@
     "dev": "node scripts/dev-start.mjs",
     "build": "next build",
     "start": "next start",
+    "postinstall": "prisma generate",
     "init-project": "bash scripts/init-project.sh",
     "typecheck": "tsc --noEmit",
     "sync": "bash scripts/sync-boilerplate.sh",
