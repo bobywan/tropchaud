@@ -78,6 +78,7 @@ services:
   minio:
     # minio/minio n'est plus maintenu (archivé fév. 2026) — alpine/minio est l'alternative communautaire officielle
     image: alpine/minio:RELEASE.2025-10-15T17-29-55Z
+    user: "0:0"
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
