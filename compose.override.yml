@@ -1,0 +1,6 @@
+# Overrides locaux — appliqués automatiquement par "docker compose up" en dev
+# Ne pas commiter de secrets ici. En production (Portainer), ce fichier est absent.
+services:
+  postgres:
+    ports:
+      - "5433:5432"

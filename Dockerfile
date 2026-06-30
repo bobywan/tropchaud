@@ -27,7 +27,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY prisma ./prisma
 COPY prisma.config.ts .
 
-CMD ["node", "node_modules/prisma/build/index.js", "migrate", "deploy"]
+CMD ["/bin/sh", "-c", "node_modules/.bin/prisma migrate deploy"]
 
 # ─── Seeder (crée/met à jour le compte admin) ──────────────────────────────────
 FROM base AS seeder
