@@ -1,8 +1,6 @@
 services:
   migrate:
-    build:
-      context: .
-      target: migrator
+    image: ghcr.io/bobywan/tropchaud-migrator:latest
     restart: "no"
     environment:
       DATABASE_URL: postgresql://tropchaud:${POSTGRES_PASSWORD:-motdepasse}@postgres:5432/tropchaud
@@ -13,9 +11,7 @@ services:
       - tropchaud
 
   seeder:
-    build:
-      context: .
-      target: seeder
+    image: ghcr.io/bobywan/tropchaud-seeder:latest
     restart: "no"
     environment:
       DATABASE_URL: postgresql://tropchaud:${POSTGRES_PASSWORD:-motdepasse}@postgres:5432/tropchaud
@@ -28,7 +24,7 @@ services:
       - tropchaud
 
   app:
-    build: .
+    image: ghcr.io/bobywan/tropchaud:latest
     restart: unless-stopped
     ports:
       - "3000:3000"

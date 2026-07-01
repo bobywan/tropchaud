@@ -5,11 +5,17 @@ FROM base AS deps
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npm ci
 
 # ─── Build ─────────────────────────────────────────────────────────────────────
 FROM base AS builder
 WORKDIR /app
+
+# URL publique inlinée dans le bundle JS au build — passée via --build-arg en CI
+ARG NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
